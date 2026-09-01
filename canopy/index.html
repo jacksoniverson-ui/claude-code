@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Canopy — Trim Room</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <div>
+      <h1>Canopy</h1>
+      <p id="roomName">Trim Room</p>
+    </div>
+  </div>
+  <div class="strip" id="roomStrip"></div>
+  <div class="storage-warning" id="storageWarning" hidden>
+    Not saving to this device — export a backup before you close this page.
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-view="room" class="active">Room</button>
+  <button data-view="batches">Batches</button>
+  <button data-view="reports">Reports</button>
+  <button data-view="log">Log &amp; setup</button>
+</nav>
+
+<main>
+  <!-- ------------------------------------------------------------ Room -->
+  <section id="view-room" class="view active">
+    <div class="room-grid">
+      <div class="stations">
+        <div class="section-head">
+          <h2>Stations running</h2>
+          <button id="btnOpenStation" class="primary">+ Open station</button>
+        </div>
+        <div id="stationList" class="station-list"></div>
+      </div>
+
+      <aside class="pad" id="pad">
+        <div class="section-head">
+          <h2>Weigh out</h2>
+          <span class="pad-station" id="padStation">No station selected</span>
+        </div>
+
+        <div class="cats" id="padCats"></div>
+
+        <label class="field" id="padWasteWrap" hidden>
+          <span>Waste reason</span>
+          <select id="padWasteReason"></select>
+        </label>
+
+        <label class="field">
+          <span>Weight</span>
+          <div class="weight-row">
+            <input id="padWeight" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" autocomplete="off">
+            <select id="padUnit" aria-label="Unit">
+              <option value="g">g</option>
+              <option value="oz">oz</option>
+              <option value="lb">lb</option>
+            </select>
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Note <em>optional</em></span>
+          <input id="padNote" type="text" maxlength="200" placeholder="" autocomplete="off">
+        </label>
+
+        <button id="padSubmit" class="primary big" disabled>Record weigh-out</button>
+        <p class="hint">Keys: <kbd>A</kbd> <kbd>B</kbd> <kbd>T</kbd> <kbd>W</kbd> pick a stream, <kbd>Enter</kbd> records.</p>
+
+        <h3>Last weigh-outs</h3>
+        <div id="padRecent" class="recent"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- Batches -->
+  <section id="view-batches" class="view">
+    <div class="section-head">
+      <h2>Batches in the room</h2>
+      <button id="btnNewBatch" class="primary">+ Weigh in batch</button>
+    </div>
+    <div class="table-wrap" id="batchTable"></div>
+    <div id="batchDetail"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- Reports -->
+  <section id="view-reports" class="view">
+    <div class="section-head">
+      <h2>Reports</h2>
+      <div class="range">
+        <button data-range="today">Today</button>
+        <button data-range="7">7 days</button>
+        <button data-range="30">30 days</button>
+        <button data-range="all" class="active">All</button>
+        <label>From <input type="date" id="repFrom"></label>
+        <label>To <input type="date" id="repTo"></label>
+      </div>
+    </div>
+    <div class="tiles" id="repTiles"></div>
+    <div class="exports">
+      <button data-export="batches">Batch summary CSV</button>
+      <button data-export="sessions">Stations CSV</button>
+      <button data-export="trimmers">Trimmers CSV</button>
+      <button data-export="waste">Waste manifest CSV</button>
+      <button data-export="entries">Full audit CSV</button>
+    </div>
+    <h3>By trimmer</h3>
+    <div class="table-wrap" id="repTrimmers"></div>
+    <h3>By batch</h3>
+    <div class="table-wrap" id="repBatches"></div>
+    <h3>Waste manifest</h3>
+    <div class="table-wrap" id="repWaste"></div>
+  </section>
+
+  <!-- ----------------------------------------------------- Log & setup -->
+  <section id="view-log" class="view">
+    <div class="section-head"><h2>Audit log</h2></div>
+    <div class="log-filters">
+      <label>Batch <select id="logBatch"><option value="">All</option></select></label>
+      <label>Stream <select id="logCategory"><option value="">All</option></select></label>
+      <label>Trimmer <select id="logTrimmer"><option value="">All</option></select></label>
+      <label class="check"><input type="checkbox" id="logVoided" checked> Show voided</label>
+    </div>
+    <div class="table-wrap" id="logTable"></div>
+
+    <div class="setup">
+      <div class="card">
+        <h3>Room settings</h3>
+        <label class="field"><span>Facility</span><input id="setFacility" type="text" maxlength="80"></label>
+        <label class="field"><span>Room name</span><input id="setRoom" type="text" maxlength="80"></label>
+        <label class="field">
+          <span>Variance tolerance %</span>
+          <input id="setTolerance" type="number" step="0.1" min="0" max="100">
+        </label>
+        <label class="field">
+          <span>Default scale unit</span>
+          <select id="setUnit"><option value="g">grams</option><option value="oz">ounces</option><option value="lb">pounds</option></select>
+        </label>
+        <p class="hint">Stations and batches outside tolerance are flagged in the reports and exports.</p>
+      </div>
+
+      <div class="card">
+        <h3>Backup</h3>
+        <p class="hint">Data lives in this browser only. Export a backup at the end of every shift.</p>
+        <div class="button-row">
+          <button id="btnExportJson">Export backup (JSON)</button>
+          <button id="btnImportJson">Restore backup</button>
+          <input type="file" id="importFile" accept="application/json,.json" hidden>
+        </div>
+        <div class="button-row">
+          <button id="btnSample">Load sample day</button>
+          <button id="btnWipe" class="danger">Erase all data</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- --------------------------------------------------------------- Modals -->
+<dialog id="dlgBatch">
+  <form method="dialog" id="formBatch">
+    <h2>Weigh in a batch</h2>
+    <label class="field"><span>Batch / package tag</span><input name="tag" required maxlength="60" autocomplete="off"></label>
+    <label class="field"><span>Strain</span><input name="strain" required maxlength="60" autocomplete="off"></label>
+    <label class="field"><span>Harvest date <em>optional</em></span><input name="harvestDate" type="date"></label>
+    <label class="field">
+      <span>Intake weight (dried, bucked)</span>
+      <div class="weight-row">
+        <input name="intake" type="number" step="0.01" min="0" inputmode="decimal" required autocomplete="off">
+        <select name="unit"><option value="g">g</option><option value="oz">oz</option><option value="lb">lb</option></select>
+      </div>
+    </label>
+    <label class="field"><span>Note <em>optional</em></span><input name="note" maxlength="200" autocomplete="off"></label>
+    <p class="form-error" data-error hidden></p>
+    <menu>
+      <button value="cancel" type="button" data-close>Cancel</button>
+      <button value="save" class="primary">Weigh in</button>
+    </menu>
+  </form>
+</dialog>
+
+<dialog id="dlgStation">
+  <form method="dialog" id="formStation">
+    <h2>Open a station</h2>
+    <label class="field"><span>Batch</span><select name="batchId" required></select></label>
+    <label class="field"><span>Trimmer</span><input name="trimmer" required maxlength="60" list="trimmerNames" autocomplete="off"></label>
+    <datalist id="trimmerNames"></datalist>
+    <label class="field"><span>Station <em>optional</em></span><input name="station" maxlength="30" autocomplete="off"></label>
+    <label class="field">
+      <span>Weight issued to the station</span>
+      <div class="weight-row">
+        <input name="issued" type="number" step="0.01" min="0" inputmode="decimal" required autocomplete="off">
+        <select name="unit"><option value="g">g</option><option value="oz">oz</option><option value="lb">lb</option></select>
+      </div>
+    </label>
+    <p class="form-error" data-error hidden></p>
+    <menu>
+      <button value="cancel" type="button" data-close>Cancel</button>
+      <button value="save" class="primary">Open station</button>
+    </menu>
+  </form>
+</dialog>
+
+<dialog id="dlgClose">
+  <form method="dialog" id="formClose">
+    <h2>Close station</h2>
+    <div id="closeSummary" class="close-summary"></div>
+    <label class="field">
+      <span>Unprocessed weight returned to the batch</span>
+      <div class="weight-row">
+        <input name="returned" type="number" step="0.01" min="0" inputmode="decimal" value="0" required autocomplete="off">
+        <select name="unit"><option value="g">g</option><option value="oz">oz</option><option value="lb">lb</option></select>
+      </div>
+    </label>
+    <p class="form-error" data-error hidden></p>
+    <menu>
+      <button value="cancel" type="button" data-close>Cancel</button>
+      <button value="save" class="primary">Close station</button>
+    </menu>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="src/domain.js"></script>
+<script src="src/reports.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
