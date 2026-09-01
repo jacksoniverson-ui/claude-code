@@ -1,0 +1,10 @@
+{
+  "name": "canopy-trim-room",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Trim room inventory tracking — A buds, B buds, trim and waste",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "npx --yes http-server . -p 8080 -o"
+  }
+}
