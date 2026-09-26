@@ -62,3 +62,27 @@ for p in clamp cradle knob pad; do
   openscad -D "part=\"$p\"" -o $p.stl stroker_desk_mount.scad
 done
 ```
+
+## Blender → Bambu Studio
+
+`blender/prepare_plate.py` takes the STLs into Blender. It:
+- repairs the meshes and checks that they are watertight,
+- turns each part to its print orientation,
+- lays all the parts out on a 256 mm Bambu bed (X1/P1/A1),
+- exports **`stroker_mount_plate.3mf`**.
+
+```sh
+blender -b -P blender/prepare_plate.py   # re-run after changing the .scad and re-exporting the STLs
+```
+
+To print, open `stroker_mount_plate.3mf` in Bambu Studio (File → Import, or drag it in).
+Then choose your printer and PETG, slice, and press **Print** to send it to the printer.
+You can also send it from Bambu Handy.
+
+Suggested slicer settings:
+- 4 walls
+- 35% gyroid infill
+- No supports, except "tree, touching build plate" if the preview shows the cradle boss sagging
+
+The whole plate is 256 × 197 mm. For an A1 mini, set `BED = 180` in the script; it will then refuse to build the plate,
+so print the cradle and clamp as separate plates.
