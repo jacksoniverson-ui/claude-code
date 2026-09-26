@@ -1,4 +1,6 @@
 // Stroker desk mount - parametric
+// NOTE 2026-09-26: cradle.stl now comes from blender/build_cradle.py (oval 125 x 65 x 60 sleeve).
+// cradle() below is the original round design, kept for reference. clamp/knob/pad still export from here.
 // ------------------------------------------------------------
 // Four printed parts:
 //   clamp  - C-clamp for the desk edge, with a toothed pivot ear

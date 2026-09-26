@@ -1,7 +1,26 @@
 # Stroker desk mount
 
-A parametric OpenSCAD mount that clamps to a desk edge and holds a caseless sleeve-style
-stroker (the Doc Johnson sleeve in the photos). The pivot has 15° steps, so you can angle it.
+A manual mount (no motor) that clamps to a desk edge and holds a caseless sleeve-style
+stroker hands-free. The pivot has 15° steps, so you can angle it.
+
+**Measured sleeve (2026-09-26): 125 mm long, 65 × 60 mm oval.** The cradle is now built in
+Blender (`blender/build_cradle.py`) as an oval tube. It has no waist, so the lip-in-waist retention below
+doesn't apply. The bore is 1 mm under the sleeve on both axes (64 × 59), so the sleeve
+is held by squeeze, and a 6 mm lip at the back stops it being pushed through. Load it from the front.
+The entrance sticks out 10 mm. The clamp, knobs and pad still come from the .scad and are unchanged.
+
+**Print on the P1S:** open `stroker_mount_P1S_PETG.3mf`. All five parts are on one plate.
+It is set up for PETG with 4 walls and 35% gyroid, with tree supports on the cradle only (under the pivot boss).
+The Studio CLI slice passes: about 11 h 50 min and 256 g.
+To rebuild after changing the sleeve size:
+
+```sh
+blender -b -P blender/build_cradle.py -- --len 125 --w 65 --h 60 --squeeze 1.0
+blender -b -P blender/prepare_plate.py
+python3 blender/make_p1s_3mf.py     # needs the canopy repo's 3mf writer; edit the paths at the top
+```
+
+*The round-sleeve notes below are for the original round-cradle .scad design.*
 
 ![assembly](assembly.png)
 
